@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人博客 · 轻简</title>
+  <!-- 简单干净，没有外部依赖，仅使用系统字体和内置样式 -->
+  <style>
+    /* 全局重置与变量 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #faf9f8;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: #1e1e1e;
+      line-height: 1.7;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* 主容器，限制宽度并居中 */
+    .blog-container {
+      max-width: 880px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.02);
+      padding: 2.5rem 2.2rem;
+      margin: 2rem 0;
+      transition: all 0.2s ease;
+    }
+
+    /* 头部区域 —— 博客标题与个人简介 */
+    .blog-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 2.8rem;
+      border-bottom: 1px solid #ececec;
+      padding-bottom: 2rem;
+    }
+
+    .avatar {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(145deg, #d9e2ec, #cbd5e1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+      font-size: 3rem;
+      font-weight: 400;
+      color: #2c3e50;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+      user-select: none;
+    }
+
+    .blog-title {
+      font-size: 2.4rem;
+      font-weight: 550;
+      letter-spacing: -0.02em;
+      color: #0b1c2f;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .blog-subtitle {
+      font-size: 1.05rem;
+      color: #5a6b7b;
+      max-width: 500px;
+      font-weight: 380;
+      margin-top: 0.2rem;
+    }
+
+    /* 文章导航 / 分类标签 (简单装饰) */
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #3f5a73;
+      padding: 0.25rem 0.7rem;
+      border-radius: 24px;
+      background: #f1f5f9;
+      transition: background 0.15s, color 0.15s;
+      font-weight: 460;
+    }
+
+    .nav-links a:hover {
+      background: #d0dfeb;
+      color: #1e3a5f;
+    }
+
+    /* 文章列表区域 */
+    .posts-section h2 {
+      font-size: 1.7rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.6rem;
+      color: #1e2a36;
+      border-left: 4px solid #8aa9c9;
+      padding-left: 1rem;
+    }
+
+    /* 每篇博客卡片 */
+    .post-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #eef2f6;
+      transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.01);
+    }
+
+    .post-card:hover {
+      transform: translateY(-3px);
+      border-color: #d0dfeb;
+      box-shadow: 0 14px 26px -8px rgba(0, 40, 80, 0.08);
+    }
+
+    .post-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: #6f7e8c;
+      margin-bottom: 0.6rem;
+      letter-spacing: 0.01em;
+    }
+
+    .post-date {
+      background: #eef4fa;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-weight: 450;
+      color: #375e7e;
+    }
+
+    .post-tag {
+      background: #e4eef7;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      color: #2f5575;
+      font-weight: 450;
+    }
+
+    .post-title {
+      font-size: 1.5rem;
+      font-weight: 530;
+      line-height: 1.4;
+      margin: 0.3rem 0 0.5rem;
+      color: #14222e;
+      letter-spacing: -0.01em;
+    }
+
+    .post-excerpt {
+      color: #3d4d5c;
+      margin-bottom: 1.1rem;
+      font-size: 1rem;
+      font-weight: 380;
+      line-height: 1.7;
+    }
+
+    .read-more {
+      display: inline-block;
+      font-weight: 480;
+      color: #2e5f84;
+      text-decoration: none;
+      border-bottom: 1.5px solid #b8d0e5;
+      padding-bottom: 2px;
+      transition: color 0.15s, border-color 0.15s;
+      font-size: 0.95rem;
+    }
+
+    .read-more:hover {
+      color: #0f3b5c;
+      border-color: #4878a3;
+    }
+
+    /* 关于/联系 底部区块 */
+    .about-footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #eceef2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .about-footer h3 {
+      font-size: 1.25rem;
+      font-weight: 480;
+      color: #1e2a36;
+      margin-bottom: 0.8rem;
+    }
+
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.6rem;
+      justify-content: center;
+      margin: 0.5rem 0 0.8rem;
+    }
+
+    .social-links a {
+      color: #3f5a73;
+      text-decoration: none;
+      font-weight: 440;
+      background: #f0f4f9;
+      padding: 0.5rem 1.2rem;
+      border-radius: 60px;
+      font-size: 0.95rem;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .social-links a:hover {
+      background: #d5e3ef;
+      color: #1e3a5f;
+    }
+
+    .copyright {
+      font-size: 0.8rem;
+      color: #8f9aa8;
+      margin-top: 1.5rem;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 550px) {
+      body {
+        padding: 0.8rem;
+      }
+
+      .blog-container {
+        padding: 1.8rem 1.2rem;
+        border-radius: 20px;
+      }
+
+      .blog-title {
+        font-size: 1.9rem;
+      }
+
+      .post-card {
+        padding: 1.2rem 1.2rem;
+      }
+
+      .post-title {
+        font-size: 1.3rem;
+      }
+
+      .avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 2.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="blog-container">
+    <!-- 博客头部：头像 + 标题 + 简介 -->
+    <header class="blog-header">
+      <div class="avatar" aria-hidden="true">✍️</div>
+      <h1 class="blog-title">我的个人博客</h1>
+      <p class="blog-subtitle">记录思考 · 分享成长 · 保持好奇</p>
+      <!-- 装饰性分类标签 (可点击但无实际跳转，可替换为真实链接) -->
+      <div class="nav-links">
+        <a href="#">全部</a>
+        <a href="#">技术</a>
+        <a href="#">生活</a>
+        <a href="#">读书</a>
+        <a href="#">随笔</a>
+      </div>
+    </header>
+
+    <!-- 文章列表区域 —— 这里是博客的核心，展示最近的文章 -->
+    <section class="posts-section">
+      <h2>近期文章</h2>
+
+      <!-- 文章卡片 1 -->
+      <article class="post-card">
+        <div class="post-meta">
+          <span class="post-date">2025-03-12</span>
+          <span class="post-tag">技术</span>
+        </div>
+        <h3 class="post-title">从零开始搭建一个静态博客</h3>
+        <p class="post-excerpt">
+          记录我如何使用简单的 HTML、CSS 和一点 JavaScript 构建一个干净、快速的个人博客。
+          不依赖复杂框架，理解核心原理，还能自由定制。
+        </p>
+        <a href="#" class="read-more">阅读全文 →</a>
+      </article>
+
+      <!-- 文章卡片 2 -->
+      <article class="post-card">
+        <div class="post-meta">
+          <span class="post-date">2025-03-05</span>
+          <span class="post-tag">生活</span>
+        </div>
+        <h3 class="post-title">清晨日记：坚持写作的第100天</h3>
+        <p class="post-excerpt">
+          每天早起写作半小时，不知不觉已经坚持了100天。最大的变化不是文笔，而是
+          梳理思绪的能力，以及对生活细微之处的觉察。
+        </p>
+        <a href="#" class="read-more">阅读全文 →</a>
+      </article>
+
+      <!-- 文章卡片 3 -->
+      <article class="post-card">
+        <div class="post-meta">
+          <span class="post-date">2025-02-20</span>
+          <span class="post-tag">读书</span>
+        </div>
+        <h3 class="post-title">《设计中的设计》读后感：重新认识“日常”</h3>
+        <p class="post-excerpt">
+          原研哉对“无印良品”和“日常设计”的解读让我意识到，好的设计不是添加，
+          而是发现事物本来的样子。这本书改变了我观察周围世界的方式。
+        </p>
+        <a href="#" class="read-more">阅读全文 →</a>
+      </article>
+
+      <!-- 你可以继续添加更多文章，只需复制上面的 article 结构并修改内容 -->
+    </section>
+
+    <!-- 底部关于区域和联系方式 -->
+    <footer class="about-footer">
+      <h3>关于我</h3>
+      <p style="max-width: 480px; color: #4a5b6b; margin-bottom: 0.8rem; font-weight: 380;">
+        一名热爱技术和文字的设计师/开发者。这里记录我的学习笔记、生活感悟和偶尔的胡思乱想。
+      </p>
+      <div class="social-links">
+        <a href="#">GitHub</a>
+        <a href="#">Twitter</a>
+        <a href="#">邮箱</a>
+        <a href="#">RSS</a>
+      </div>
+      <div class="copyright">
+        © 2025 我的个人博客 · 由 ❤️ 驱动
+      </div>
+    </footer>
+  </div>
+  <!-- 简单的交互提示：点击分类标签会在控制台显示信息，仅作演示，可删除 -->
+  <script>
+    // 极简的脚本，只是为了让分类标签有反馈（可选功能）
+    (function() {
+      const navLinks = document.querySelectorAll('.nav-links a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();  // 防止页面跳转（因为没有真实链接）
+          const tag = link.textContent.trim();
+          console.log(`[博客] 你点击了分类: ${tag} (这是演示交互，可以替换为筛选逻辑)`);
+          // 你也可以在这里添加筛选文章的逻辑，但保持简单演示。
+        });
+      });
+
+      // 给所有“阅读全文”链接也添加提示，避免页面跳转
+      const readMoreLinks = document.querySelectorAll('.read-more');
+      readMoreLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('[博客] 阅读全文 — 真实场景中这里会跳转到文章详情页。');
+        });
+      });
+    })();
+  </script>
+  <!-- 说明：所有链接目前是占位符 "#"，点击不会跳转，但会显示控制台信息。
+       你可以将 href="#" 替换成真实的文章页面或外部链接。 -->
+</body>
+</html>
